@@ -4,6 +4,30 @@ Design handoff mockup for the paid Business Directory feature on [roseburgtracke
 
 ---
 
+## Full Scope (from product owner)
+
+Roseburg Tracker — Business Directory Scope (v3)
+
+What it is: A paid directory for businesses, services, and organizations that lives at /directory and auto-features listings in the main news feed on rotation.
+
+Pricing: $10/month, $100/year (~2 months free)
+
+Listing types: Businesses, Services, Organizations (tag system, extensible)
+
+Each listing: Name + logo, 35-word description, category tag(s), address, phone, website URL
+
+Layout: /directory grid with keyword search + category filter. Feed auto-injects "Featured" card every 5-8 posts, rotating evenly. Optional sidebar/footer widget on article pages.
+
+Flywheel: Self-service signup form → pay → listing goes live (optional admin approval) → rotation distributes featured slots evenly → subscription lapses = auto-hide.
+
+Stripe: Reuse existing RT Stripe infrastructure. Create new subscription tiers for directory plans, wire to activation/deactivation.
+
+Admin: Dashboard for active subscribers/revenue/approvals. Override to pin or pause.
+
+Tech: Simple DB table (name, description, phone, url, logo, tags, subscription status). Rotation = round-robin or weighted random. Self-service one-page signup.
+
+---
+
 ## Scope
 
 Build a paid business directory for Roseburg Tracker:
