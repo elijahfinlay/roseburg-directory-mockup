@@ -1,89 +1,80 @@
 import Link from "next/link";
-import { MapPin, Phone, ExternalLink, Star } from "lucide-react";
+import { ArrowUpRight, Star } from "lucide-react";
 import type { Business } from "@/app/lib/mockData";
-import CategoryTag from "./CategoryTag";
 
 interface Props {
   business: Business;
+  compact?: boolean;
 }
 
-export default function BusinessCard({ business }: Props) {
-  return (
-    <article className="rt-card flex flex-col overflow-hidden group">
-      {/* Card top: logo + header */}
-      <div className="p-5 flex items-start gap-4">
-        {/* Logo placeholder */}
-        <div
-          className="w-14 h-14 rounded-lg flex items-center justify-center flex-shrink-0 text-white font-serif font-bold text-lg shadow-sm"
-          style={{ backgroundColor: business.logoColor }}
-          aria-label={`${business.name} logo`}
-        >
-          {business.logoPlaceholder}
-        </div>
+// Category dot color — subtle visual indicator instead of heavy colored pills
+const DOT: Record<string, string> = {
+  Business:     "bg-amber-600",
+  Service:      "bg-blue-600",
+  Organization: "bg-emerald-600",
+};
 
-        <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between gap-2">
-            <Link href={`/directory/listing/${business.id}`} className="hover:text-rt-amber transition-colors">
-              <h3 className="font-serif text-lg text-rt-text leading-snug line-clamp-2">
-                {business.name}
-              </h3>
-            </Link>
-            {business.featured && (
-              <span className="flex-shrink-0 flex items-center gap-1 text-xs font-semibold font-sans text-rt-amber bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
-                <Star size={10} fill="currentColor" />
-                Featured
-              </span>
-            )}
+export default function BusinessCard({ business, compact = false }: Props) {
+  return (
+    <Link
+      href={`/directory/listing/${business.id}`}
+      className="group relative flex flex-col bg-white border border-rt-border hover:border-rt-text/30 transition-all duration-200 h-full"
+    >
+      {/* Featured marker — single subtle gold star, top right */}
+      {business.featured && (
+        <span className="absolute top-3 right-3 text-rt-amber" title="Featured listing">
+          <Star size={13} fill="currentColor" />
+        </span>
+      )}
+
+      {/* Header: logo + name */}
+      <div className={`${compact ? "p-5" : "p-6"} pb-3`}>
+        <div className="flex items-center gap-3 mb-4">
+          {/* Logo — flatter, no shadow, slightly tighter */}
+          <div
+            className="w-10 h-10 rounded flex items-center justify-center flex-shrink-0 text-white font-serif font-medium text-[13px] tracking-wide"
+            style={{ backgroundColor: business.logoColor }}
+            aria-hidden
+          >
+            {business.logoPlaceholder}
           </div>
 
-          {/* Category tags */}
-          <div className="flex flex-wrap gap-1 mt-1.5">
-            {business.categories.map((cat) => (
-              <CategoryTag key={cat} category={cat} />
+          {/* Category dots + label — subtle */}
+          <div className="flex items-center gap-1.5 text-[11px] font-sans uppercase tracking-[0.12em] text-rt-text/50 font-medium min-w-0">
+            {business.categories.map((cat, i) => (
+              <span key={cat} className="flex items-center gap-1.5 flex-shrink-0">
+                {i > 0 && <span className="text-rt-text/20">·</span>}
+                <span className={`w-1.5 h-1.5 rounded-full ${DOT[cat]}`} />
+                <span>{cat}</span>
+              </span>
             ))}
           </div>
         </div>
-      </div>
 
-      {/* Description */}
-      <div className="px-5 pb-4">
-        <p className="text-sm font-sans text-rt-textMuted leading-relaxed line-clamp-3">
+        <h3 className="font-serif text-[22px] leading-[1.15] text-rt-text group-hover:text-rt-amber transition-colors mb-2 tracking-tight">
+          {business.name}
+        </h3>
+
+        <p className="text-[14px] font-sans text-rt-text/65 leading-relaxed line-clamp-3">
           {business.description}
         </p>
       </div>
 
-      {/* Contact info */}
-      <div className="px-5 pb-4 space-y-1.5 border-t border-rt-border pt-3 mt-auto">
-        <div className="flex items-start gap-2 text-xs text-rt-textMuted font-sans">
-          <MapPin size={13} className="mt-0.5 flex-shrink-0 text-rt-textLight" />
-          <span className="leading-tight">{business.address}</span>
-        </div>
-        <div className="flex items-center gap-2 text-xs text-rt-textMuted font-sans">
-          <Phone size={13} className="flex-shrink-0 text-rt-textLight" />
-          <a href={`tel:${business.phone}`} className="hover:text-rt-amber transition-colors">
+      {/* Footer: address + chevron */}
+      <div className="mt-auto px-6 py-4 border-t border-rt-border flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-[12px] font-sans text-rt-text/60 truncate leading-tight">
+            {business.address.split(",")[0]}
+          </p>
+          <p className="text-[12px] font-sans text-rt-text/40 truncate leading-tight mt-0.5">
             {business.phone}
-          </a>
+          </p>
         </div>
+        <ArrowUpRight
+          size={16}
+          className="flex-shrink-0 text-rt-text/30 group-hover:text-rt-amber group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all"
+        />
       </div>
-
-      {/* Footer actions */}
-      <div className="px-5 py-3 bg-rt-surface border-t border-rt-border flex items-center justify-between">
-        <Link
-          href={`/directory/listing/${business.id}`}
-          className="text-xs font-semibold font-sans text-rt-amber hover:text-rt-amberDark transition-colors"
-        >
-          View listing →
-        </Link>
-        <a
-          href={business.website}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-1 text-xs font-semibold font-sans text-rt-textMuted hover:text-rt-amber transition-colors"
-        >
-          Visit website
-          <ExternalLink size={11} />
-        </a>
-      </div>
-    </article>
+    </Link>
   );
 }

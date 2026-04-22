@@ -1,60 +1,61 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 
 const NAV_LINKS = [
-  { label: "Jobs", href: "https://roseburgtracker.com/jobs" },
-  { label: "Advertise", href: "https://roseburgtracker.com/advertise" },
+  { label: "Jobs",       href: "https://roseburgtracker.com/jobs" },
+  { label: "Events",     href: "https://roseburgtracker.com/events" },
   { label: "Newsletter", href: "https://roseburgtracker.com/newsletter" },
-  { label: "Events", href: "https://roseburgtracker.com/events" },
-  { label: "Directory", href: "/directory", highlight: true },
+  { label: "Advertise",  href: "https://roseburgtracker.com/advertise" },
+  { label: "Directory",  href: "/directory", internal: true },
 ];
 
 export default function Nav() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const pathname = usePathname();
 
   return (
-    <header className="w-full bg-white shadow-nav sticky top-0 z-50">
+    <header className="w-full bg-white border-b border-rt-border sticky top-0 z-50">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-14">
-          {/* Logo / Site name */}
-          <Link href="https://roseburgtracker.com" className="flex items-center gap-2 group">
-            <div className="w-8 h-8 bg-rt-amber rounded flex items-center justify-center flex-shrink-0">
-              <span className="text-white font-serif font-bold text-sm leading-none">RT</span>
-            </div>
-            <span className="font-serif text-lg text-rt-text group-hover:text-rt-amber transition-colors">
-              Roseburg Tracker
-            </span>
+        <div className="flex items-center justify-between h-16">
+          {/* Wordmark — text only, no logo block */}
+          <Link
+            href="https://roseburgtracker.com"
+            className="font-serif text-[20px] sm:text-[22px] text-rt-text tracking-tight hover:text-rt-amber transition-colors leading-none"
+          >
+            Roseburg Tracker
           </Link>
 
           {/* Desktop nav */}
-          <nav className="hidden md:flex items-center gap-6">
-            {NAV_LINKS.map((link) =>
-              link.highlight ? (
+          <nav className="hidden md:flex items-center gap-7">
+            {NAV_LINKS.map((link) => {
+              const isActive =
+                link.internal && pathname?.startsWith(link.href);
+              return (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="rt-btn-primary text-xs px-3 py-1.5"
+                  className={`relative text-[13px] tracking-wide font-sans transition-colors ${
+                    isActive
+                      ? "text-rt-amber font-semibold"
+                      : "text-rt-text/70 hover:text-rt-text font-medium"
+                  }`}
                 >
                   {link.label}
+                  {isActive && (
+                    <span className="absolute -bottom-[22px] left-0 right-0 h-px bg-rt-amber" />
+                  )}
                 </Link>
-              ) : (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="text-sm font-sans font-medium text-rt-textMuted hover:text-rt-amber transition-colors"
-                >
-                  {link.label}
-                </Link>
-              )
-            )}
+              );
+            })}
           </nav>
 
           {/* Mobile hamburger */}
           <button
-            className="md:hidden p-1 text-rt-textMuted hover:text-rt-amber transition-colors"
+            className="md:hidden p-1 text-rt-text/70 hover:text-rt-amber transition-colors"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Toggle navigation"
           >
@@ -64,21 +65,25 @@ export default function Nav() {
 
         {/* Mobile menu */}
         {mobileOpen && (
-          <nav className="md:hidden border-t border-rt-border py-3 flex flex-col gap-1">
-            {NAV_LINKS.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setMobileOpen(false)}
-                className={`block px-2 py-2 text-sm font-sans font-medium rounded transition-colors ${
-                  link.highlight
-                    ? "text-rt-amber font-semibold"
-                    : "text-rt-textMuted hover:text-rt-amber"
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
+          <nav className="md:hidden border-t border-rt-border py-2 flex flex-col">
+            {NAV_LINKS.map((link) => {
+              const isActive =
+                link.internal && pathname?.startsWith(link.href);
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setMobileOpen(false)}
+                  className={`px-2 py-2.5 text-sm font-sans transition-colors ${
+                    isActive
+                      ? "text-rt-amber font-semibold"
+                      : "text-rt-text/70 hover:text-rt-amber"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
           </nav>
         )}
       </div>
